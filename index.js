@@ -1,26 +1,25 @@
-const http = require("http");
 const fs = require("fs");
+const http = require("http");
 const PORT = 8080;
-const server = http.createServer((req, res) => {
-  if (req.url == "/") {
-    res.writeHead(200, { "Content-type": "text/html" });
-    res.end("<h1>Home page</h1>");
-  } else if (req.url == "/about") {
-    res.writeHead(200, { "Content-type": "text/html" });
-    res.end("<h1>About page</h1>");
-  } else if (req.url == "/services") {
-    res.writeHead(200, { "Content-type": "text/html" });
-    res.end("<h1>Services page</h1>");
-  } else if (req.url == "/api") {
-    fs.readFile("./db.json", "utf-8", (err, data) => {
-      res.writeHead(200, { "Content-type": "application/json" });
-      res.end(data);
-    });
-  } else {
-    res.writeHead(404, { "Content-type": "text/html" });
-    res.end("<h1>page not found</h1>");
-  }
+const server = http.createServer();
+server.on("request", (req, res) => {
+  // fs.readFile("./Stream_Buffer/main.txt", "utf-8", (err, data) => {
+  //   if (err) {
+  //     res.statusCode = 400;
+  //     res.end("error found");
+  //   }
+  //   res.statusCode = 200;
+  //   res.setHeader("Content-Type", "text/html");
+  //   res.end(`<p>${data}</p>`);
+  // });
+  const rsstream = fs.createReadStream("./Stream_Buffer/main.txt");
+  rsstream.on("data", (chunk) => {
+    res.write(chunk);
+  });
+  rsstream.on("end", () => {
+    res.end();
+  });
 });
-server.listen(PORT, (error) => {
-  console.log(`listening to the server on http://localhost:${PORT}`);
+server.listen(PORT, (err) => {
+  console.log(`listening to the PORT http://localhost:${PORT}`);
 });
